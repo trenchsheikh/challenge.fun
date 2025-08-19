@@ -11,7 +11,12 @@ interface Zone {
 const ZONES: Zone[] = [
 	{ label: 'UK', city: 'London', timeZone: 'Europe/London' },
 	{ label: 'USA', city: 'New York', timeZone: 'America/New_York' },
-	{ label: 'China', city: 'Beijing', timeZone: 'Asia/Shanghai' },
+	{ label: 'Japan', city: 'Tokyo', timeZone: 'Asia/Tokyo' },
+	{ label: 'Hong Kong', city: 'Hong Kong', timeZone: 'Asia/Hong_Kong' },
+	{ label: 'Singapore', city: 'Singapore', timeZone: 'Asia/Singapore' },
+	{ label: 'Switzerland', city: 'Zurich', timeZone: 'Europe/Zurich' },
+	{ label: 'Germany', city: 'Frankfurt', timeZone: 'Europe/Berlin' },
+	{ label: 'Australia', city: 'Sydney', timeZone: 'Australia/Sydney' },
 ]
 
 export default function HeaderTimeBar() {
@@ -46,9 +51,13 @@ export default function HeaderTimeBar() {
 		}
 
 		update()
-		const id = setInterval(update, 1000)
+		// Update every 5 seconds instead of every second to reduce glitches
+		const id = setInterval(update, 5000)
 		return () => clearInterval(id)
 	}, [])
+
+	// Create the carousel content
+	const timeSegments = ZONES.map((z, idx) => `${z.city}: ${times[idx]}`).join('  •  ')
 
 	return (
 		<div
@@ -63,36 +72,43 @@ export default function HeaderTimeBar() {
 		>
 			{/* Content */}
 			<div className="px-12 py-2 relative z-10">
-				<div className="flex items-center justify-center">
-					{ZONES.map((z, idx) => (
-						<div key={z.label} className="flex items-center mx-8">
-							<span className="text-sm font-semibold text-white mr-6 drop-shadow-lg">
-								{z.city}:
-							</span>
-							<span 
-								className="text-base font-mono font-bold tabular-nums tracking-wide drop-shadow-lg"
-								style={{ color: '#00ff00', textShadow: '0 0 3px #00ff00' }}
-							>
-								{times[idx]}
-							</span>
-							{idx < 2 && (
-								<span 
-									className="text-lg font-bold ml-2 drop-shadow-lg"
-									style={{ color: '#00ff00', textShadow: '0 0 3px #00ff00' }}
-								>
-									•
-								</span>
-							)}
-						</div>
-					))}
+				<div className="marquee-wrapper">
+					<div className="marquee-track">
+						<span className="marquee-text text-ticker-color ticker-glow tracking-wide font-semibold text-sm">
+							{timeSegments}  •  {timeSegments}  •  {timeSegments}  •  {timeSegments}  •  {timeSegments}  •  {timeSegments}  •  {timeSegments}  •  {timeSegments}  •  {timeSegments}  •  {timeSegments}
+						</span>
+					</div>
 				</div>
 			</div>
 
-			{/* Custom CSS for gradient animation */}
+			{/* Custom CSS for gradient animation and marquee */}
 			<style jsx>{`
 				@keyframes gradientShift {
 					0%, 100% { background-position: 0% 50%; }
 					50% { background-position: 100% 50%; }
+				}
+				
+				.marquee-wrapper {
+					overflow: hidden;
+					white-space: nowrap;
+					position: relative;
+				}
+				
+				.marquee-track {
+					display: inline-block;
+					white-space: nowrap;
+					animation: marquee-time 100s linear infinite;
+					animation-timing-function: linear;
+				}
+				
+				.marquee-text {
+					display: inline-block;
+					white-space: nowrap;
+				}
+				
+				@keyframes marquee-time {
+					0% { transform: translateX(-50%); }
+					100% { transform: translateX(0); }
 				}
 			`}</style>
 		</div>
