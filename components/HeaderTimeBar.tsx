@@ -28,16 +28,18 @@ export default function HeaderTimeBar() {
 			setTimes(
 				ZONES.map((z) => {
 					try {
-						// Use proper timezone conversion
-						const time = new Date(now.toLocaleString('en-US', { timeZone: z.timeZone }))
-						return time.toLocaleTimeString('en-US', {
+						// Use Intl.DateTimeFormat for proper timezone conversion
+						const formatter = new Intl.DateTimeFormat('en-US', {
 							hour12: false,
 							hour: '2-digit',
 							minute: '2-digit',
 							second: '2-digit',
 							timeZone: z.timeZone
 						})
+						
+						return formatter.format(now)
 					} catch (error) {
+						console.error(`Error getting time for ${z.city}:`, error)
 						// Fallback to local time if timezone fails
 						return now.toLocaleTimeString('en-US', {
 							hour12: false,
@@ -51,8 +53,8 @@ export default function HeaderTimeBar() {
 		}
 
 		update()
-		// Update every 5 seconds instead of every second to reduce glitches
-		const id = setInterval(update, 5000)
+		// Update every second for live times
+		const id = setInterval(update, 1000)
 		return () => clearInterval(id)
 	}, [])
 
